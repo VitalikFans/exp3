@@ -1,0 +1,91 @@
+"use strict";
+/* MARKDOWN
+---
+title: Getting Started
+---
+
+## Getting Started With the Aragon SDK
+
+### Before You Begin
+
+The Aragon OSx SDK is Javascript agnostic, which means you can use it with any Javascript framework, including popular ones like React, Vite, or Vue.
+
+However, keep in mind that because server-side rendering is not supported yet for some crypto packages, you will not be able to use a framework like NextJS. Only frameworks that run entirely on client-side are supported.
+
+Also know that all documentation within this site is done with Typescript. You can read more about [Typescript here](https://www.typescriptlang.org/).
+
+### Installing the SDK
+
+First thing you want to do is install the Aragon OSx SDK package into your product. You can do this by using `npm` or `yarn`.
+
+```bash
+npm install @aragon/sdk-client
+```
+or
+```bash
+yarn add @aragon/sdk-client
+```
+
+### Setting up the Context
+
+Then, you'll want to set up the Aragon OSx SDK context within your application to have access to the SDK functions. You can do this at any point within your app.
+
+However, so you're not setting it up multiple times, we recommend you set it up as a [context hook](https://www.freecodecamp.org/news/react-context-for-beginners/) within Javascript application if you're using a framework like React, Vue, or other, or within the entry file of your app.
+*/
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.minimalContext = exports.context = exports.contextParams = exports.IPFS_API_KEY = void 0;
+var wallet_1 = require("@ethersproject/wallet");
+var sdk_client_1 = require("@aragon/sdk-client");
+// Set up your IPFS API key. You can get one either by running a local node or by using a service like Infura or Alechmy.
+// Make sure to always keep these private in a file that is not committed to your public repository.
+exports.IPFS_API_KEY = "ipfs-api-key";
+// OPTION A: The simplest ContextParams you can have is this. This uses our default values and should work perfectly within your product.
+var minimalContextParams = {
+    // Choose the network you want to use. You can use "goerli" (Ethereum) or "maticmum" (Polygon) for testing, or "mainnet" (Ethereum) and "polygon" (Polygon) for mainnet.
+    network: "mainnet",
+    web3Providers: "https://eth.llamarpc.com",
+    // This is the signer account who will be signing transactions for your app. You can use also use a specific account where you have funds, through passing it `new Wallet("your-wallets-private-key")` or pass it in dynamically when someone connects their wallet to your dApp.
+    signer: wallet_1.Wallet.createRandom(),
+};
+// OPTION B: For a more advanced option, you can use the following ContextParams. This will allow you to use your own custom values if desired.
+exports.contextParams = {
+    // Choose the network you want to use. You can use "goerli" (Ethereum) or "maticmum" (Mumbai) for testing, or "mainnet" (Ethereum) and "polygon" (Polygon) for mainnet.
+    network: "goerli",
+    // This is the account that will be signing transactions for your app. You can use also use a specific account where you have funds, through passing it `new Wallet("your-wallets-private-key")` or pass it in dynamically when someone connects their wallet to your dApp.
+    signer: wallet_1.Wallet.createRandom(),
+    // Optional on "rinkeby", "arbitrum-rinkeby" or "mumbai"
+    // Pass the address of the  `DaoFactory` contract you want to use. You can find it here based on your chain of choice: https://github.com/aragon/core/blob/develop/active_contracts.json
+    // Optional. Leave it empty to use Aragon's DAO Factory contract and claim a dao.eth subdomain
+    daoFactoryAddress: "0x1234381072385710239847120734123847123",
+    // Optional. Pass the address of the ensRegistry for networks other than Mainnet or Goerli.
+    // It will default to the registry deployed by Aragon. You can check them here: https://github.com/aragon/osx/blob/develop/active_contracts.json
+    ensRegistryAddress: "0x1234381072385710239847120734123847123",
+    // Choose your Web3 provider: Cloudfare, Infura, Alchemy, etc.
+    // Remember to change the list of providers if a different network is selected
+    web3Providers: ["https://rpc.ankr.com/eth_goerli"],
+    // Optional. By default, it will use Aragon's provided endpoints.
+    // They will switch depending on the network (production, development)
+    ipfsNodes: [
+        {
+            url: "https://test.ipfs.aragon.network/api/v0",
+            headers: { "X-API-KEY": exports.IPFS_API_KEY || "" },
+        },
+    ],
+    // Optional. By default it will use Aragon's provided endpoints.
+    // They will switch depending on the network (production, development)
+    graphqlNodes: [
+        {
+            url: "https://subgraph.satsuma-prod.com/aragon/core-goerli/api",
+        },
+    ],
+};
+// After defining the context parameters, you'll use them to instantiate the Aragon SDK context
+// exports.context = new sdk_client_1.Context(exports.contextParams); // or minimalContextParams
+// Instantiate the Aragon SDK context
+exports.minimalContext = new sdk_client_1.Context(minimalContextParams);
+/* MARKDOWN
+Update the context with new parameters if you wish to throughout your app.
+*/
+// exports.context.set({ network: 1 });
+// exports.context.set({ signer: new wallet_1.Wallet("private key") }); // if you're using wagmi library, you can also get the signer through their [`useSigner` method](https://wagmi.sh/react/hooks/useSigner) inside a `useEffect` hook.
+// exports.context.set(exports.contextParams);
